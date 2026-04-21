@@ -27,3 +27,15 @@ print(f2.evaluate({"p": True, "q": False}))   # False
 f3 = Iff(p, q)
 print(f3.evaluate({"p": True, "q": True}))    # True
 print(f3.evaluate({"p": True, "q": False}))   # False
+
+
+from formula import Atom, Implies, And, Not, Or
+from cnf import to_cnf
+
+p = Atom("p")
+q = Atom("q")
+r = Atom("r")
+
+print(to_cnf(Implies(p, q)))              # should look like (!p | q)
+print(to_cnf(Implies(p, And(q, r))))      # should look like ((!p | q) & (!p | r))
+print(to_cnf(Not(Or(p, q))))              # should look like (!p & !q)
