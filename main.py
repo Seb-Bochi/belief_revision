@@ -21,3 +21,4 @@ S.add(And(p, q), priority=3)
 S.show()
 S.contract(p)
 S.show()
+from formula import Atom, And, Not
