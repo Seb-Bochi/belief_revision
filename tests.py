@@ -1,4 +1,17 @@
-# unit tests 
+# unit tests
+#
+# Formula commands used in this file:
+# Atom("p")        = an atomic proposition, for example p
+# Not(f)           = negation, meaning "not f"
+# And(f, g)        = conjunction, meaning "f and g"
+# Or(f, g)         = disjunction, meaning "f or g"
+# Implies(f, g)    = implication, meaning "if f then g"
+# Iff(f, g)        = biconditional, meaning "f if and only if g"
+#
+# Useful methods:
+# evaluate({...})  = checks whether a formula is true under a given valuation
+# atoms()          = returns the set of atomic propositions used in a formula
+
 from formula import Atom, Not, And, Or, Implies, Iff
 
 p = Atom("p")
