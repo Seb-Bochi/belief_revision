@@ -13,6 +13,7 @@
 # atoms()          = returns the set of atomic propositions used in a formula
 
 from formula import Atom, Not, And, Or, Implies, Iff
+from cnf import to_cnf
 
 p = Atom("p")
 q = Atom("q")
@@ -27,10 +28,6 @@ print(f2.evaluate({"p": True, "q": False}))   # False
 f3 = Iff(p, q)
 print(f3.evaluate({"p": True, "q": True}))    # True
 print(f3.evaluate({"p": True, "q": False}))   # False
-
-
-from formula import Atom, Implies, And, Not, Or
-from cnf import to_cnf
 
 p = Atom("p")
 q = Atom("q")
