@@ -28,7 +28,10 @@ belief base);
 The output should be the resulting/new belief base.
 
 """
-from formula import Atom, And, Or, Not, Implies, Iff, Formula
+from formula import Atom, And, Or, Not, Implies, Iff, Formula, Truth, Falsity
+from cnf import to_cnf
+from resolution import extract_clauses, pl_resolution
+import itertools
 
 p = Atom("p")
 q = Atom("q")
@@ -49,9 +52,8 @@ class BeliefBase:
         self.entries.append(BeliefEntry(formula, priority))
 
     def contract(self, formula: Formula):
-        # remove all entries that entail the formula using the maximal consistent subset
+        # remove all entries that entail the formula using maximal consistent subset
         self.entries = self.maximal_consistent_subset(formula)
-        
     
     def revise(self, formula: Formula, priority: int = 5):
         # contraction + expansion
@@ -59,19 +61,37 @@ class BeliefBase:
         self.add(formula, priority)
 
     def entails(self, formula: Formula) -> bool:
-        # check if any entry in the belief base entails the formula
+        """Check if belief base entails formula using CNF resolution."""
+        all_clauses = []
+        
+        # Convert each belief base formula to CNF and extract clauses
         for entry in self.entries:
-            if self.entails(entry.formula, formula):
-                return True
-        return False
+            cnf = to_cnf(entry.formula)
+            clauses = extract_clauses(cnf)
+            all_clauses.extend(clauses)
+        
+        # Convert negation of conclusion to CNF and extract clauses
+        neg_formula = Not(formula)
+        cnf_neg = to_cnf(neg_formula)
+        clauses_neg = extract_clauses(cnf_neg)
+        all_clauses.extend(clauses_neg)
+        
+        # Check unsatisfiability via resolution
+        return pl_resolution(all_clauses)
+    
 
     def is_consistent(self) -> bool:
-        # check if the belief base is consistent (no contradictions)
-        for i in range(len(self.entries)):
-            for j in range(i + 1, len(self.entries)):
-                if self.entails(self.entries[i].formula, Not(self.entries[j].formula)):
-                    return False
-        return True
+        """Check if the belief base is consistent using resolution."""
+        all_clauses = []
+        
+        # Convert all formulas to CNF and extract clauses
+        for entry in self.entries:
+            cnf = to_cnf(entry.formula)
+            clauses = extract_clauses(cnf)
+            all_clauses.extend(clauses)
+        
+        # Check satisfiability: NOT unsatisfiable
+        return not pl_resolution(all_clauses)
     def show(self):
         for entry in self.entries:
             print(entry)
@@ -89,9 +109,18 @@ class BeliefBase:
         return BeliefBase(entries=self.entries.copy())
     
     def maximal_consistent_subset(self, formula: Formula) -> list[BeliefEntry]:
-        # find the maximal consistent subset of the belief base that does not entail the formula
-        consistent_subset = []
-        for entry in self.entries:
-            if not self.entails(entry.formula):
-                consistent_subset.append(entry)
-        return consistent_subset
+        """Find maximal consistent subset that does not entail the formula."""
+        # Start with empty subset and greedily add beliefs by priority
+        result = []
+        
+        # Sort entries by priority (higher first) to prefer keeping high-priority beliefs
+        sorted_entries = sorted(self.entries, key=lambda e: -e.priority)
+        
+        for entry in sorted_entries:
+            # Try adding this entry
+            test_bb = BeliefBase(result + [entry])
+            # Add only if still consistent and doesn't entail the formula
+            if test_bb.is_consistent() and not test_bb.entails(formula):
+                result.append(entry)
+        
+        return result
