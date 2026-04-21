@@ -1,4 +1,4 @@
-from formula import Atom, Not, And, Or, Implies, Iff
+from formula import Atom, Not, And, Or
 from cnf import to_cnf
 from itertools import combinations
 
@@ -10,14 +10,12 @@ def literal_from_formula(f):
     if isinstance(f, Not) and isinstance(f.operand, Atom):
         return (f.operand.name, False)
 
-
 def clause_from_formula(f):
     # Convert a disjunction into one clause
     if isinstance(f, Or):
         return clause_from_formula(f.left).union(clause_from_formula(f.right))
     
     return {literal_from_formula(f)}
-
 
 def clauses_from_cnf(f):
     # Convert a CNF formula into a list of clauses
@@ -31,7 +29,6 @@ def complementary(l1, l2):
     # True when literals are the same atom with opposite signs
     return l1[0] == l2[0] and l1[1] != l2[1]
 
-
 def resolve(ci, cj):
     resolvents = set ()
 
@@ -42,7 +39,6 @@ def resolve(ci, cj):
                 resolvents.add(frozenset(new_clause))
     
     return resolvents
-
 
 def resolution(clauses):
     # Main resolution loop
@@ -64,7 +60,6 @@ def resolution(clauses):
         
         clauses = clauses.union(new)
 
-
 def is_consistent(formulas):
     # True if formulas do not derive contradiction
     clauses = []
@@ -76,9 +71,6 @@ def is_consistent(formulas):
     clause_set = {frozenset(clause) for clause in clauses}
 
     return not resolution(clause_set)
-
-    
-
 
 def entails(premises, conclusion):
     # premises |= conclusion iff premises + !conclusion is inconsistent
