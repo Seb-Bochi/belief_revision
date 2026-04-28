@@ -3,9 +3,9 @@ name = "beliefbase-assignment"
 version = "1.0.0"
 description = "Project to showcase understanding of beliefbases and logic, implemented using python."
 authors = [
-    {name = "Agrim Bhatnagar",
-     name = "Mathias Spezia",
-     name = "Sebastian Bochineck"}
+    {name = "Agrim Bhatnagar"},
+    {name = "Mathias Spezia"},
+    {name = "Sebastian Bochineck"}
 ]
 requires-python = ">=3.12"
 dependencies = [
