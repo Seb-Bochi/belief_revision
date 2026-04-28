@@ -8,7 +8,7 @@
 │    Disjunction:   p | q                                     │
 │    Implication:   p -> q                                    │
 │    Biconditional: p <-> q                                   │
-│    Grouping:      (p | q) & ~r                              |
+│    Grouping:      (p | q) & !r                              |
 
 │  BELIEF BASE COMMANDS                                       │
 │    expand <formula> [prio]    Expand belief base │
@@ -30,8 +30,7 @@ The output should be the resulting/new belief base.
 """
 from formula import Atom, And, Or, Not, Implies, Iff, Formula, Truth, Falsity
 from cnf import to_cnf
-from resolution import extract_clauses, pl_resolution
-import itertools
+from resolution import clause_from_formula, clauses_from_cnf, complementary, resolve, resolution, literal_from_formula, entails, is_consistent
 
 p = Atom("p")
 q = Atom("q")
@@ -60,38 +59,6 @@ class BeliefBase:
         self.contract(formula)
         self.add(formula, priority)
 
-    def entails(self, formula: Formula) -> bool:
-        """Check if belief base entails formula using CNF resolution."""
-        all_clauses = []
-        
-        # Convert each belief base formula to CNF and extract clauses
-        for entry in self.entries:
-            cnf = to_cnf(entry.formula)
-            clauses = extract_clauses(cnf)
-            all_clauses.extend(clauses)
-        
-        # Convert negation of conclusion to CNF and extract clauses
-        neg_formula = Not(formula)
-        cnf_neg = to_cnf(neg_formula)
-        clauses_neg = extract_clauses(cnf_neg)
-        all_clauses.extend(clauses_neg)
-        
-        # Check unsatisfiability via resolution
-        return pl_resolution(all_clauses)
-    
-
-    def is_consistent(self) -> bool:
-        """Check if the belief base is consistent using resolution."""
-        all_clauses = []
-        
-        # Convert all formulas to CNF and extract clauses
-        for entry in self.entries:
-            cnf = to_cnf(entry.formula)
-            clauses = extract_clauses(cnf)
-            all_clauses.extend(clauses)
-        
-        # Check satisfiability: NOT unsatisfiable
-        return not pl_resolution(all_clauses)
     def show(self):
         for entry in self.entries:
             print(entry)
