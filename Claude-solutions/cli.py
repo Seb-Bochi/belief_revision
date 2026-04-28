@@ -4,7 +4,7 @@ cli.py — Command-line interface for the Belief Revision Agent
 
 from __future__ import annotations
 import sys
-from formula import parse, ParseError, formulas_equivalent
+from formula import parse, clauses_from_cnfError, formulas_equivalent
 from belief_base import BeliefBase
 from plausibility import PlausibilityOrder, order_from_formulas, format_world
 from resolution import entails, is_consistent_set

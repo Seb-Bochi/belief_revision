@@ -39,9 +39,9 @@ HELP_TEXT = """
 │    clear                      Clear belief base             │
 ├─────────────────────────────────────────────────────────────┤
 │  OTHER                                                      │
-│    help                       Show this help               │
-│    demo                       Run demonstration            │
-│    quit / exit                Exit                         │
+│    help                       Show this help                │
+│    demo                       Run demonstration             │
+│    quit / exit                Exit                          │
 └─────────────────────────────────────────────────────────────┘
 """
 
