@@ -73,5 +73,3 @@ print("\nEntailment tests:")
 print("Do [p, p -> q] entail q?", entails([p, Implies(p, q)], q))   # True
 print("Do [q] entail p?", entails([q], p))                          # False
 print("Do [p & q] entail p?", entails([And(p, q)], p))              # True
-
-

@@ -30,7 +30,7 @@ The output should be the resulting/new belief base.
 """
 from formula import Atom, And, Or, Not, Implies, Iff, Formula, Truth, Falsity
 from cnf import to_cnf
-from resolution import extract_clauses, pl_resolution
+from resolution import clauses_from_cnf, resolution
 import itertools
 
 p = Atom("p")
@@ -67,17 +67,18 @@ class BeliefBase:
         # Convert each belief base formula to CNF and extract clauses
         for entry in self.entries:
             cnf = to_cnf(entry.formula)
-            clauses = extract_clauses(cnf)
+            clauses = clauses_from_cnf(cnf)
             all_clauses.extend(clauses)
         
         # Convert negation of conclusion to CNF and extract clauses
         neg_formula = Not(formula)
         cnf_neg = to_cnf(neg_formula)
-        clauses_neg = extract_clauses(cnf_neg)
+        clauses_neg = clauses_from_cnf(cnf_neg)
         all_clauses.extend(clauses_neg)
         
         # Check unsatisfiability via resolution
-        return pl_resolution(all_clauses)
+        clause_set = {frozenset(clause) for clause in all_clauses}
+        return resolution(clause_set)
     
 
     def is_consistent(self) -> bool:
@@ -87,11 +88,12 @@ class BeliefBase:
         # Convert all formulas to CNF and extract clauses
         for entry in self.entries:
             cnf = to_cnf(entry.formula)
-            clauses = extract_clauses(cnf)
+            clauses = clauses_from_cnf(cnf)
             all_clauses.extend(clauses)
         
         # Check satisfiability: NOT unsatisfiable
-        return not pl_resolution(all_clauses)
+        clause_set = {frozenset(clause) for clause in all_clauses}
+        return not resolution(clause_set)
     def show(self):
         for entry in self.entries:
             print(entry)

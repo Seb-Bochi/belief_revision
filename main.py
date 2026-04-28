@@ -12,7 +12,7 @@ import sys
 import argparse
 from formula import Atom, And, Not, Implies, Or, Iff, Formula, parse, ParseError
 from belief_base import BeliefBase
-from resolution import extract_clauses, pl_resolution
+from resolution import clauses_from_cnf, pl_resolution
 from cnf import to_cnf
 
 HELP_TEXT = """
