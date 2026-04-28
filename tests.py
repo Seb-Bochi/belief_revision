@@ -14,25 +14,62 @@
 
 from formula import Atom, Not, And, Or, Implies, Iff
 from cnf import to_cnf
+from resolution import is_consistent, entails
 
-p = Atom("p")
-q = Atom("q")
-
-f1 = And(p, Not(q))
-print(f1.evaluate({"p": True, "q": False}))   # True
-print(f1.atoms())                             # {'p', 'q'}
-
-f2 = Implies(p, q)
-print(f2.evaluate({"p": True, "q": False}))   # False
-
-f3 = Iff(p, q)
-print(f3.evaluate({"p": True, "q": True}))    # True
-print(f3.evaluate({"p": True, "q": False}))   # False
-
+# atoms
 p = Atom("p")
 q = Atom("q")
 r = Atom("r")
 
-print(to_cnf(Implies(p, q)))              # should look like (!p | q)
-print(to_cnf(Implies(p, And(q, r))))      # should look like ((!p | q) & (!p | r))
-print(to_cnf(Not(Or(p, q))))              # should look like (!p & !q)
+# -----------------------
+# Formula evaluation tests
+# -----------------------
+f1 = And(p, Not(q))
+print("f1 =", f1)
+print("f1 evaluate:", f1.evaluate({"p": True, "q": False}))   # True
+print("f1 atoms:", f1.atoms())                                # {'p', 'q'}
+
+f2 = Or(p, q)
+print("f2 =", f2)
+print("f2 evaluate:", f2.evaluate({"p": False, "q": True}))   # True
+
+f3 = Implies(p, q)
+print("f3 =", f3)
+print("f3 evaluate:", f3.evaluate({"p": True, "q": False}))   # False
+
+f4 = Iff(p, q)
+print("f4 =", f4)
+print("f4 evaluate:", f4.evaluate({"p": True, "q": True}))    # True
+print("f4 evaluate:", f4.evaluate({"p": True, "q": False}))   # False
+
+# -----------------------
+# CNF tests
+# -----------------------
+print("\nCNF tests:")
+
+cnf1 = to_cnf(Implies(p, q))
+print("CNF of (p -> q):", cnf1)   # expected: (!p | q)
+
+cnf2 = to_cnf(Implies(p, And(q, r)))
+print("CNF of (p -> (q & r)):", cnf2)   # expected: ((!p | q) & (!p | r))
+
+cnf3 = to_cnf(Not(Or(p, q)))
+print("CNF of !(p | q):", cnf3)   # expected: (!p & !q)
+
+# -----------------------
+# Consistency tests
+# -----------------------
+print("\nConsistency tests:")
+
+print("Is [p] consistent?", is_consistent([p]))                     # True
+print("Is [p, !p] consistent?", is_consistent([p, Not(p)]))        # False
+print("Is [p, p -> q, !q] consistent?", is_consistent([p, Implies(p, q), Not(q)]))  # False
+
+# -----------------------
+# Entailment tests
+# -----------------------
+print("\nEntailment tests:")
+
+print("Do [p, p -> q] entail q?", entails([p, Implies(p, q)], q))   # True
+print("Do [q] entail p?", entails([q], p))                          # False
+print("Do [p & q] entail p?", entails([And(p, q)], p))              # True

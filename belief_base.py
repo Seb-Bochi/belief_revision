@@ -30,7 +30,8 @@ The output should be the resulting/new belief base.
 """
 from formula import Atom, And, Or, Not, Implies, Iff, Formula, Truth, Falsity
 from cnf import to_cnf
-from resolution import clause_from_formula, clauses_from_cnf, complementary, resolve, resolution, literal_from_formula, entails, is_consistent
+from resolution import clauses_from_cnf, resolution
+import itertools
 
 p = Atom("p")
 q = Atom("q")
@@ -55,10 +56,44 @@ class BeliefBase:
         self.entries = self.maximal_consistent_subset(formula)
     
     def revise(self, formula: Formula, priority: int = 5):
-        # contraction + expansion
-        self.contract(formula)
+        # Levi identity: contract by !formula, then expand by formula
+        self.contract(Not(formula))
         self.add(formula, priority)
 
+    def entails(self, formula: Formula) -> bool:
+        """Check if belief base entails formula using CNF resolution."""
+        all_clauses = []
+        
+        # Convert each belief base formula to CNF and extract clauses
+        for entry in self.entries:
+            cnf = to_cnf(entry.formula)
+            clauses = clauses_from_cnf(cnf)
+            all_clauses.extend(clauses)
+        
+        # Convert negation of conclusion to CNF and extract clauses
+        neg_formula = Not(formula)
+        cnf_neg = to_cnf(neg_formula)
+        clauses_neg = clauses_from_cnf(cnf_neg)
+        all_clauses.extend(clauses_neg)
+        
+        # Check unsatisfiability via resolution
+        clause_set = {frozenset(clause) for clause in all_clauses}
+        return resolution(clause_set)
+    
+
+    def is_consistent(self) -> bool:
+        """Check if the belief base is consistent using resolution."""
+        all_clauses = []
+        
+        # Convert all formulas to CNF and extract clauses
+        for entry in self.entries:
+            cnf = to_cnf(entry.formula)
+            clauses = clauses_from_cnf(cnf)
+            all_clauses.extend(clauses)
+        
+        # Check satisfiability: NOT unsatisfiable
+        clause_set = {frozenset(clause) for clause in all_clauses}
+        return not resolution(clause_set)
     def show(self):
         for entry in self.entries:
             print(entry)

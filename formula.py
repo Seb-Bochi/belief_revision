@@ -1,4 +1,6 @@
 # formula classes / AST nodes
+from lark import Lark, Transformer, exceptions
+from pathlib import Path
 
 class Formula:
     pass
@@ -106,3 +108,44 @@ class Iff(Formula):
 
     def __repr__(self):
         return f"({self.left} <-> {self.right})"
+
+GRAMMAR = Path("GRAMMAR").read_text()
+
+class ParseError(Exception):
+    pass
+
+
+class FormulaTransformer(Transformer):
+    def atom(self, items):
+        return Atom(str(items[0]))
+
+    def truth(self, items):
+        return Truth()
+
+    def falsity(self, items):
+        return Falsity()
+
+    def not_(self, items):
+        return Not(items[0])
+
+    def and_(self, items):
+        return And(items[0], items[1])
+
+    def or_(self, items):
+        return Or(items[0], items[1])
+
+    def implies(self, items):
+        return Implies(items[0], items[1])
+
+    def iff(self, items):
+        return Iff(items[0], items[1])
+
+
+_parser = Lark(GRAMMAR, parser="lalr", transformer=FormulaTransformer())
+
+
+def parse(text):
+    try:
+        return _parser.parse(text)
+    except exceptions.LarkError as e:
+        raise ParseError(str(e)) from e
