@@ -56,8 +56,8 @@ class BeliefBase:
         self.entries = self.maximal_consistent_subset(formula)
     
     def revise(self, formula: Formula, priority: int = 5):
-        # contraction + expansion
-        self.contract(formula)
+        # Levi identity: contract by !formula, then expand by formula
+        self.contract(Not(formula))
         self.add(formula, priority)
 
     def entails(self, formula: Formula) -> bool:
