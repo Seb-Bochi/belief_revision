@@ -109,7 +109,7 @@ class Iff(Formula):
     def __repr__(self):
         return f"({self.left} <-> {self.right})"
 
-GRAMMAR = Path("GRAMMAR").read_text()
+GRAMMAR = Path("GRAMMAR.lark").read_text()
 
 class ParseError(Exception):
     pass
