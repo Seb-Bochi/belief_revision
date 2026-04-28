@@ -64,8 +64,8 @@ class LogicTransformer(Transformer):
         return ("quit",)
 
 
-parser = Lark(
-    GRAMMAR,
+parser = Lark.open(
+    "GRAMMAR.lark",
     parser="lalr",
     transformer=LogicTransformer(),
 )
