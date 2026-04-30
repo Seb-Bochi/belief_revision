@@ -1,8 +1,31 @@
 # Belief Revision Assignment
 
-## How to run
-pip install .
-python
+## Setup and run
+
+We recommend creating a virtual environment within the folder and downloading all the necessary dependencies (mainly `lark` for parsing). This can be done with the following command in bash:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -e .
+```
+
+or on Windows:
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+pip install -e .
+```
+
+### Running the application
+
+To run the application, just run the command:
+
+````bash
+belief-revision
+````
+
 
 
 ## The repo
