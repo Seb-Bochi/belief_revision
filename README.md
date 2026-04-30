@@ -1,7 +1,8 @@
 # Belief Revision Assignment
 
 ## How to run
-
+pip install .
+python
 
 
 ## The repo
