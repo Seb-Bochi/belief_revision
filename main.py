@@ -31,7 +31,6 @@ HELP_TEXT = """
 ├─────────────────────────────────────────────────────────────┤
 │  BELIEF BASE COMMANDS                                       │
 │    add <formula> [priority]   Add formula (default prio=5)  │
-│    expand <formula> [prio]    Expand belief base            │
 │    contract <formula>         Contract belief base          │
 │    revise <formula> [prio]    Revise belief base (Levi)     │
 │    entails <formula>          Check if K |= formula         │
@@ -105,7 +104,7 @@ def run_interactive():
                     bb = BeliefBase()
                     print("  Belief base cleared.")
 
-                case "add" | "expand":
+                case "add":
                     _, phi, prio = command
                     bb.add(phi, prio)
                     print(f"  Added: {phi}  (priority={prio})")
