@@ -5,6 +5,7 @@ Implements AGM belief revision with resolution-based entailment.
 
 Usage:
     python main.py                  # interactive mode
+    python main.py --demo           # run demonstration
 """
 
 import sys
@@ -39,6 +40,7 @@ HELP_TEXT = """
 ├─────────────────────────────────────────────────────────────┤
 │  OTHER                                                      │
 │    help                       Show this help                │
+│    demo                       Run demonstration             │
 │    quit / exit                Exit                          │
 └─────────────────────────────────────────────────────────────┘
 """
@@ -51,7 +53,7 @@ def banner():
 ║  Implements: AGM revision, contraction, expansion,           ║
 ║             resolution entailment, CNF conversion            ║
 ╚═══════════════════════════════════════════════════════════════╝
-Type 'help' for commands
+Type 'help' for commands, 'demo' for a demonstration.
 """)
 
 
@@ -82,6 +84,9 @@ def run_interactive():
                 case "help":
                     print(HELP_TEXT)
 
+                case "demo":
+                    run_demo()
+
                 case "show":
                     print("\nCurrent Belief Base:")
                     if bb.is_empty():
@@ -93,7 +98,7 @@ def run_interactive():
 
                 case "consistent":
                     result = bb.is_consistent()
-                    print(f"  Belief base is {'consistent ✅' if result else 'INCONSISTENT ❌'}")
+                    print(f"  Belief base is {'consistent' if result else 'INCONSISTENT'}")
 
                 case "clear":
                     bb = BeliefBase()
@@ -137,7 +142,7 @@ def run_interactive():
                 case "entails":
                     _, phi = command
                     result = bb.entails(phi)
-                    print(f"  K |= {phi} : {'Yes ✅' if result else 'No ❌'}")
+                    print(f"  K |= {phi} : {'Yes' if result else 'No'}")
 
                 case _:
                     print(f"  Unknown command: {cmd}  (type 'help' for commands)")
@@ -147,12 +152,83 @@ def run_interactive():
         except Exception as e:
             print(f"  Error: {e}")
 
+def run_demo():
+    pass
+#     """Demonstration of belief revision operations."""
+#     print("""
+# ╔═══════════════════════════════════════════════════════════════╗
+# ║               BELIEF REVISION — DEMO                         ║
+# ║  Scenario: "Tweety the Bird"                                 ║
+# ║  Atoms: b=bird, f=flies, p=penguin                           ║
+# ╚═══════════════════════════════════════════════════════════════╝
+# """)
+
+#     bb = BeliefBase()
+
+#     print("Step 1: Build initial belief base")
+#     print("─" * 50)
+#     steps = [
+#         ("b -> f",  8,  "Birds fly"),
+#         ("p -> b",  8,  "Penguins are birds"),
+#         ("p -> ~f", 9,  "Penguins don't fly  (higher priority)"),
+#         ("b",       5,  "Tweety is a bird"),
+#     ]
+#     for formula_str, prio, desc in steps:
+#         phi = parse(formula_str)
+#         bb.add(phi, prio)
+#         print(f"  add [{prio}] {str(phi):20s}  — {desc}")
+
+#     print("\nInitial Belief Base:")
+#     for entry in sorted(bb.entries, key=lambda e: -e.priority):
+#         print(f"  {entry}")
+#     print(f"\n  Consistent: {bb.is_consistent()}")
+#     print(f"  K |= flies: {bb.entails(parse('f'))}")
+
+#     print("\n\nStep 2: Revise — Tweety is a penguin!")
+#     print("─" * 50)
+#     p_penguin = parse("p")
+#     print(f"  Revising with: p  (priority=7)")
+#     bb.revise(p_penguin, priority=7)
+#     print("\nBelief Base after K * p:")
+#     for entry in sorted(bb.entries, key=lambda e: -e.priority):
+#         print(f"  {entry}")
+#     print(f"\n  K |= penguin: {bb.entails(parse('p'))}")
+#     print(f"  K |= flies:   {bb.entails(parse('f'))}")
+#     print(f"  K |= ~flies:  {bb.entails(parse('~f'))}")
+#     print(f"  K |= bird:    {bb.entails(parse('b'))}")
+
+#     print("\n\nStep 3: Contract — remove belief that Tweety flies")
+#     print("─" * 50)
+#     flies = parse("f")
+#     old_bb = bb.copy()
+#     bb.contract(flies)
+#     print(f"  Contracting by: f")
+#     print("\nBelief Base after K ÷ f:")
+#     for entry in sorted(bb.entries, key=lambda e: -e.priority):
+#         print(f"  {entry}")
+#     print(f"\n  K÷f |= flies: {bb.entails(parse('f'))}")
+
+#     print("\n\nStep 4: Properties check")
+#     print("─" * 50)
+#     print("AGM Postulates:")
+#     print("  ✓ K ÷ φ ⊆ K  (Inclusion)")
+#     print(f"    Contracted size: {len(bb.entries)}, Original size: {len(old_bb.entries)}")
+#     print(f"    Consistent: {bb.is_consistent()}")
+#     print(f"    Entails φ: {bb.entails(flies)}")
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Belief Revision Agent (Propositional Logic)",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    run_interactive()
+    parser.add_argument("--demo", action="store_true", help="Run demonstration")
+    args = parser.parse_args()
+
+    if args.demo:
+        run_demo()
+    else:
+        run_interactive()
 
 
 if __name__ == "__main__":
