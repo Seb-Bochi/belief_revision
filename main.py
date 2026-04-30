@@ -88,7 +88,6 @@ def run_interactive():
                 case "demo":
                     run_demo()
 
-<<<<<<< Updated upstream
                 case "show":
                     print("\nCurrent Belief Base:")
                     if bb.is_empty():
@@ -97,11 +96,6 @@ def run_interactive():
                         for entry in sorted(bb.entries, key=lambda e: -e.priority):
                             print(f"  {entry}")
                     print()
-=======
-            elif cmd == "consistent":
-                result = bb.is_consistent()
-                print(f"  Belief base is {'consistent' if result else 'INCONSISTENT'}")
->>>>>>> Stashed changes
 
                 case "consistent":
                     result = bb.is_consistent()
@@ -123,16 +117,9 @@ def run_interactive():
                     bb.contract(phi)
                     new_size = len(bb.entries)
 
-<<<<<<< Updated upstream
                     print(f"  Contracted by: {phi}")
                     print(f"  Removed {old_size - new_size} formula(s).")
                     print("\nBelief Base after contraction:")
-=======
-            elif cmd == "entails":
-                phi = parse(rest.strip())
-                result = bb.entails(phi)
-                print(f"  K |= {phi} : {'Yes' if result else 'No'}")
->>>>>>> Stashed changes
 
                     if bb.is_empty():
                         print("  (empty)")
